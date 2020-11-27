@@ -13,7 +13,7 @@
 %global gdk_pixbuf_version 2.30.0
 %global xrandr_version 1.5.0
 %global wayland_version 1.9.91
-%global wayland_protocols_version 1.14
+%global wayland_protocols_version 1.17
 %global epoxy_version 1.4
 
 %global bin_version 3.0.0
@@ -25,14 +25,16 @@
 
 Name: gtk3
 Version: 3.24.23
-Release: 1.patched%{?dist}
+Release: 2.patched%{?dist}
 Summary: GTK+ graphical user interface library
 
 License: LGPLv2+
 URL: http://www.gtk.org
-Source0: https://download.gnome.org/sources/gtk+/3.24/gtk+-%{version}.tar.xz
+Source0: https://www.mirrorservice.org/sites/ftp.gnome.org/pub/GNOME/sources/gtk+/3.24/gtk+-%{version}.tar.xz
 
 Patch0: Fix-GtkEntryCompletion.patch
+# Backported from upstream
+Patch1: 0001-gdk-wayland-Add-support-for-primary-selection-unstab.patch
 
 BuildRequires: pkgconfig(atk) >= %{atk_version}
 BuildRequires: pkgconfig(atk-bridge-2.0)
@@ -67,7 +69,7 @@ BuildRequires: pkgconfig(wayland-egl) >= %{wayland_version}
 BuildRequires: pkgconfig(wayland-protocols) >= %{wayland_protocols_version}
 BuildRequires: pkgconfig(xkbcommon)
 %if 0%{?with_sysprof}
-BuildRequires: pkgconfig(sysprof-capture-3)
+BuildRequires: pkgconfig(sysprof-capture-4)
 %endif
 
 # standard icons
@@ -328,11 +330,20 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests/
 
 %changelog
+* Tue Nov 24 2020 Kalev Lember <klember@redhat.com> - 3.24.23-2
+- Backport a patch to add support for primary-selection-unstable-v1 protocol
+
 * Fri Sep 04 2020 Kalev Lember <klember@redhat.com> - 3.24.23-1
 - Update to 3.24.23
 
+* Mon Aug 17 2020 Kalev Lember <klember@redhat.com> - 3.24.22-2
+- Rebuild for sysprof-capture-4
+
 * Mon Aug 17 2020 Kalev Lember <klember@redhat.com> - 3.24.22-1
 - Update to 3.24.22
+
+* Tue Jul 28 2020 Fedora Release Engineering <releng@fedoraproject.org> - 3.24.21-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
 
 * Mon Jul 20 2020 Kalev Lember <klember@redhat.com> - 3.24.21-1
 - Update to 3.24.21
