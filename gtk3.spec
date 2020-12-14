@@ -8,11 +8,11 @@
 
 %global glib2_version 2.57.2
 %global pango_version 1.41.0
-%global atk_version 2.15.1
+%global atk_version 2.32.0
 %global cairo_version 1.14.0
 %global gdk_pixbuf_version 2.30.0
 %global xrandr_version 1.5.0
-%global wayland_version 1.9.91
+%global wayland_version 1.14.91
 %global wayland_protocols_version 1.17
 %global epoxy_version 1.4
 
@@ -24,17 +24,13 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 Name: gtk3
-Version: 3.24.23
-Release: 2.patched%{?dist}
+Version: 3.24.24
+Release: 1.patched%{?dist}
 Summary: GTK+ graphical user interface library
 
 License: LGPLv2+
 URL: http://www.gtk.org
-Source0: https://www.mirrorservice.org/sites/ftp.gnome.org/pub/GNOME/sources/gtk+/3.24/gtk+-%{version}.tar.xz
-
-Patch0: Fix-GtkEntryCompletion.patch
-# Backported from upstream
-Patch1: 0001-gdk-wayland-Add-support-for-primary-selection-unstab.patch
+Source0: https://github.com/GNOME/gtk/archive/%{version}.tar.gz
 
 BuildRequires: pkgconfig(atk) >= %{atk_version}
 BuildRequires: pkgconfig(atk-bridge-2.0)
@@ -330,8 +326,8 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests/
 
 %changelog
-* Tue Nov 24 2020 Kalev Lember <klember@redhat.com> - 3.24.23-2
-- Backport a patch to add support for primary-selection-unstable-v1 protocol
+* Fri Dec 11 2020 Kalev Lember <klember@redhat.com> - 3.24.24-1
+- Update to 3.24.24
 
 * Fri Sep 04 2020 Kalev Lember <klember@redhat.com> - 3.24.23-1
 - Update to 3.24.23
