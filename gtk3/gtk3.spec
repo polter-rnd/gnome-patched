@@ -2,39 +2,31 @@
 %global with_broadway 1
 %endif
 
-%if 0%{?fedora} >= 31
-%global with_sysprof 1
-%endif
-
 %global glib2_version 2.57.2
 %global pango_version 1.41.0
-%global atk_version 2.15.1
+%global atk_version 2.35.1
 %global cairo_version 1.14.0
 %global gdk_pixbuf_version 2.30.0
 %global xrandr_version 1.5.0
-%global wayland_version 1.9.91
 %global wayland_protocols_version 1.17
+%global wayland_version 1.14.91
 %global epoxy_version 1.4
 
 %global bin_version 3.0.0
-
-%global _changelog_trimtime %(date +%s -d "1 year ago")
 
 # Filter provides for private modules
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 Name: gtk3
-Version: 3.24.23
-Release: 2.patched%{?dist}
+Version: 3.24.29
+Release: 1.patched%{?dist}
 Summary: GTK+ graphical user interface library
 
 License: LGPLv2+
 URL: http://www.gtk.org
-Source0: https://www.mirrorservice.org/sites/ftp.gnome.org/pub/GNOME/sources/gtk+/3.24/gtk+-%{version}.tar.xz
+Source0: https://download.gnome.org/sources/gtk+/3.24/gtk+-%{version}.tar.xz
 
 Patch0: Fix-GtkEntryCompletion.patch
-# Backported from upstream
-Patch1: 0001-gdk-wayland-Add-support-for-primary-selection-unstab.patch
 
 BuildRequires: pkgconfig(atk) >= %{atk_version}
 BuildRequires: pkgconfig(atk-bridge-2.0)
@@ -44,6 +36,7 @@ BuildRequires: pkgconfig(cairo) >= %{cairo_version}
 BuildRequires: pkgconfig(cairo-gobject) >= %{cairo_version}
 BuildRequires: pkgconfig(pango) >= %{pango_version}
 BuildRequires: pkgconfig(gdk-pixbuf-2.0) >= %{gdk_pixbuf_version}
+BuildRequires: pkgconfig(cloudproviders)
 BuildRequires: pkgconfig(xi)
 BuildRequires: pkgconfig(xrandr) >= %{xrandr_version}
 BuildRequires: pkgconfig(xrender)
@@ -68,9 +61,7 @@ BuildRequires: pkgconfig(wayland-cursor) >= %{wayland_version}
 BuildRequires: pkgconfig(wayland-egl) >= %{wayland_version}
 BuildRequires: pkgconfig(wayland-protocols) >= %{wayland_protocols_version}
 BuildRequires: pkgconfig(xkbcommon)
-%if 0%{?with_sysprof}
-BuildRequires: pkgconfig(sysprof-capture-4)
-%endif
+BuildRequires: make
 
 # standard icons
 Requires: adwaita-icon-theme
@@ -93,20 +84,10 @@ Requires: libwayland-cursor%{?_isa} >= %{wayland_version}
 Requires: gdk-pixbuf2-modules%{?_isa}
 
 # make sure we have a reasonable gsettings backend
-%if 0%{?fedora} || 0%{?rhel} > 7
 Recommends: dconf%{?_isa}
-%else
-Requires: dconf%{?_isa}
-%endif
 
-# gtk3 itself includes the Adwaita theme now
-Obsoletes: adwaita-gtk3-theme < 3.13.3
-Provides: adwaita-gtk3-theme = %{version}-%{release}
-
-# gtk3 no longer provides the GtkThemeEngine interface used there
-Obsoletes: gtk3-engines <= 2.91.5-5.fc15
-Obsoletes: gtk-solidity-engine < 0.4.1-9
-Obsoletes: oxygen-gtk3 < 2:1.4.1
+# For sound theme events in gtk3 apps
+Recommends: libcanberra-gtk3%{?_isa}
 
 %description
 GTK+ is a multi-platform toolkit for creating graphical user
@@ -118,8 +99,6 @@ This package contains version 3 of GTK+.
 
 %package -n gtk-update-icon-cache
 Summary: Icon theme caching utility
-# gtk-update-icon-cache used to be shipped in the gtk2 package
-Conflicts: gtk2 < 2.24.29
 
 %description -n gtk-update-icon-cache
 GTK+ can use the cache files created by gtk-update-icon-cache to avoid a lot of
@@ -147,7 +126,6 @@ The gtk3-immodule-xim package contains XIM support for GTK+ 3.
 %package devel
 Summary: Development files for GTK+
 Requires: gtk3%{?_isa} = %{version}-%{release}
-Obsoletes: gtk3-engines-devel <= 2.91.5-5.fc15
 
 %description devel
 This package contains the libraries and header files that are needed
@@ -189,6 +167,7 @@ export CFLAGS='-fno-strict-aliasing %optflags'
 %if 0%{?with_broadway}
         --enable-broadway-backend \
 %endif
+        --enable-cloudproviders \
         --enable-colord \
         --enable-installed-tests \
         --with-included-immodules=wayland
@@ -330,6 +309,44 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests/
 
 %changelog
+* Fri Apr 23 2021 Kalev Lember <klember@redhat.com> - 3.24.29-1
+- Update to 3.24.29
+
+* Tue Apr 20 2021 Kalev Lember <klember@redhat.com> - 3.24.28-3
+- Enable cloudproviders support (#1821002)
+
+* Tue Apr 06 2021 Kalev Lember <klember@redhat.com> - 3.24.28-2
+- Backport upstream fix for typing apostrophes / single quotes (#1946133)
+
+* Sat Mar 27 2021 Kalev Lember <klember@redhat.com> - 3.24.28-1
+- Update to 3.24.28
+- Drop old obsoletes
+
+* Fri Mar 12 2021 Kalev Lember <klember@redhat.com> - 3.24.27-1
+- Update to 3.24.27
+
+* Tue Feb 23 2021 Kalev Lember <klember@redhat.com> - 3.24.26-1
+- Update to 3.24.26
+
+* Fri Feb 19 2021 Kalev Lember <klember@redhat.com> - 3.24.25-3
+- Backport upstream patch to fix a settings schema loading issue on Wayland
+
+* Mon Feb 15 2021 Kalev Lember <klember@redhat.com> - 3.24.25-2
+- Backport upstream patches to fix regressions in Compose file parsing
+- Backport upstream patch to further tweak scrollbar transitions and size
+
+* Fri Feb 12 2021 Kalev Lember <klember@redhat.com> - 3.24.25-1
+- Update to 3.24.25
+
+* Tue Jan 26 2021 Fedora Release Engineering <releng@fedoraproject.org> - 3.24.24-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
+
+* Fri Jan 22 2021 Kalev Lember <klember@redhat.com> - 3.24.24-2
+- Recommend libcanberra-gtk3 for sound theme events in gtk3 apps
+
+* Fri Dec 11 2020 Kalev Lember <klember@redhat.com> - 3.24.24-1
+- Update to 3.24.24
+
 * Tue Nov 24 2020 Kalev Lember <klember@redhat.com> - 3.24.23-2
 - Backport a patch to add support for primary-selection-unstable-v1 protocol
 
