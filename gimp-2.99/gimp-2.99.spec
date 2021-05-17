@@ -14,7 +14,7 @@
 
 Name:       gimp-2.99
 Version:    2.99.7
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    GNU Image Manipulation Program
 
 License:    GPLv3+ and GPLv3
@@ -226,6 +226,10 @@ rm -f %{buildroot}%{_mandir}/man1/gimptool.1*
 # Remove unversioned metainfo (conflict with GIMP)
 rm  -f %{buildroot}%{_datadir}/metainfo/*.appdata.xml
 
+# Remove window-close icon (fix issue #5875)
+# https://gitlab.gnome.org/GNOME/gimp/-/issues/5875
+rm -f %{buildroot}%{_datadir}/gimp/%{binver}/icons/Symbolic/scalable/apps/window-close-symbolic.svg
+
 # desktop file -- mention version/unstable, use custom icon
 desktop-file-install --dir=%{buildroot}%{_datadir}/applications \
     --set-name="GIMP %major.%minor" \
@@ -355,6 +359,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/*.xml
 %{_libdir}/gimp/%{lib_api_version}/plug-ins/help-browser
 
 %changelog
+* Mon May 17 16:32:57 CET 2020 Pavel Artsishevsky <polter.rnd@gmail.com> - 2.99.7-2
+- Update to 2.99.7
+
 * Fri Dec 11 02:51:57 CET 2020 Robert-André Mauchin <zebob.m@gmail.com> - 2.99.2-1
 - Update to 2.99.2
 
