@@ -8,13 +8,13 @@
 %global lib_api_version %{major}.%{minor}
 %global gettext_version 30
 
-%global commit          6dc98fe7f0855e73fa062a5128f936c0f22c891f
-%global snapshotdate    20210509
+%global commit          de31d65daa1150cf559054cb2a4d4c661163d637
+%global snapshotdate    20210517
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
 
 Name:       gimp-2.99
 Version:    2.99.7
-Release:    2%{?dist}
+Release:    3%{?dist}
 Summary:    GNU Image Manipulation Program
 
 License:    GPLv3+ and GPLv3
@@ -29,6 +29,10 @@ Patch1:         gimp-2.99-cm-system-monitor-profile-by-default.patch
 Patch2:         gimp-2.99-default-font.patch
 # use external help browser directly if help browser plug-in is not built
 Patch3:         gimp-2.99-external-help-browser.patch
+
+# Update main window css classes on maximize/minimize/tile/etc.
+# Necessary for such gnome-shell extensions as pixel-saver
+Patch4:         gimp-2.99-window-state-event.patch
 
 BuildRequires:  aalib-devel
 BuildRequires:  curl
@@ -116,6 +120,7 @@ Requires:       %{name}-libs = %{version}-%{release}
 Requires:       %{name}-data = %{version}-%{release}
 Requires:       hicolor-icon-theme
 Requires:       xdg-utils
+Requires:       lua-lgi-compat
 Recommends:     darktable
 Recommends:     ghostscript
 Recommends:     gjs
@@ -209,10 +214,9 @@ find %{buildroot}%{_libdir}/gimp/%{lib_api_version}/* -type d | sed "s@^%{buildr
 %find_lang gimp%{gettext_version}-std-plug-ins
 %find_lang gimp%{gettext_version}-script-fu
 %find_lang gimp%{gettext_version}-libgimp
-%find_lang gimp%{gettext_version}-tips
 %find_lang gimp%{gettext_version}-python
 
-cat gimp%{gettext_version}.lang gimp%{gettext_version}-std-plug-ins.lang gimp%{gettext_version}-script-fu.lang gimp%{gettext_version}-libgimp.lang gimp%{gettext_version}-tips.lang gimp%{gettext_version}-python.lang > gimp-all.lang
+cat gimp%{gettext_version}.lang gimp%{gettext_version}-std-plug-ins.lang gimp%{gettext_version}-script-fu.lang gimp%{gettext_version}-libgimp.lang gimp%{gettext_version}-python.lang > gimp-all.lang
 
 # Build the master filelists generated from the above mess.
 cat gimp-plugin-files gimp-all.lang > gimp.files
@@ -359,6 +363,12 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/*.xml
 %{_libdir}/gimp/%{lib_api_version}/plug-ins/help-browser
 
 %changelog
+* Mon May 17 17:15:34 CET 2020 Pavel Artsishevsky <polter.rnd@gmail.com> - 2.99.7-3
+- Add patch for running parent implementation of window_state_event
+- Remove gimp30-tips.mo from package (issue #6852)
+- Fix /etc/gimprc
+- Add lua-lgi-compat to requirements
+
 * Mon May 17 16:32:57 CET 2020 Pavel Artsishevsky <polter.rnd@gmail.com> - 2.99.7-2
 - Update to 2.99.7
 
