@@ -18,7 +18,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 Name: gtk3
-Version: 3.24.29
+Version: 3.24.30
 Release: 1.patched%{?dist}
 Summary: GTK+ graphical user interface library
 
@@ -309,6 +309,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests/
 
 %changelog
+* Mon Jul 12 2021 David King <amigadave@amigadave.com> - 3.24.30-1
+- Update to 3.24.30
+
 * Fri Apr 23 2021 Kalev Lember <klember@redhat.com> - 3.24.29-1
 - Update to 3.24.29
 
