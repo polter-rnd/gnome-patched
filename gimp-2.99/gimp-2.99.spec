@@ -3,18 +3,18 @@
 
 %global major 2
 %global minor 99
-%global micro 7
+%global micro 8
 %global binver %{major}.%{minor}
 %global lib_api_version %{major}.%{minor}
 %global gettext_version 30
 
-%global commit          de31d65daa1150cf559054cb2a4d4c661163d637
-%global snapshotdate    20210517
+%global commit          71c2fd63b8748867c5c5c1de355f667a1dfe512a
+%global snapshotdate    20211019
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
 
 Name:       gimp-2.99
-Version:    2.99.7
-Release:    3%{?dist}
+Version:    2.99.8
+Release:    1%{?dist}
 Summary:    GNU Image Manipulation Program
 
 License:    GPLv3+ and GPLv3
