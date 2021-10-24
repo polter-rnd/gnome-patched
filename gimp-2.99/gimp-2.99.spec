@@ -363,13 +363,16 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/*.xml
 %{_libdir}/gimp/%{lib_api_version}/plug-ins/help-browser
 
 %changelog
-* Mon May 17 17:15:34 CET 2020 Pavel Artsishevsky <polter.rnd@gmail.com> - 2.99.7-3
+* Tue Oct 24 18:56:34 CET 2021 Pavel Artsishevsky <polter.rnd@gmail.com> - 2.99.8-1
+- Update to 2.99.8
+
+* Mon May 17 17:15:34 CET 2021 Pavel Artsishevsky <polter.rnd@gmail.com> - 2.99.7-3
 - Add patch for running parent implementation of window_state_event
 - Remove gimp30-tips.mo from package (issue #6852)
 - Fix /etc/gimprc
 - Add lua-lgi-compat to requirements
 
-* Mon May 17 16:32:57 CET 2020 Pavel Artsishevsky <polter.rnd@gmail.com> - 2.99.7-2
+* Mon May 17 16:32:57 CET 2021 Pavel Artsishevsky <polter.rnd@gmail.com> - 2.99.7-2
 - Update to 2.99.7
 
 * Fri Dec 11 02:51:57 CET 2020 Robert-André Mauchin <zebob.m@gmail.com> - 2.99.2-1
