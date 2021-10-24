@@ -61,15 +61,15 @@ BuildRequires:  pkgconfig(dbus-glib-1)
 BuildRequires:  pkgconfig(fontconfig) >= 2.12.4
 BuildRequires:  pkgconfig(freetype2) >= 2.1.7
 BuildRequires:  pkgconfig(gdk-pixbuf-2.0) >= 2.30.8
-BuildRequires:  pkgconfig(gegl-0.4) >= 0.4.26
+BuildRequires:  pkgconfig(gegl-0.4) >= 0.4.32
 BuildRequires:  pkgconfig(gexiv2) >= 0.10.6
 BuildRequires:  pkgconfig(gio-unix-2.0)
-BuildRequires:  pkgconfig(glib-2.0) >= 2.56.2
+BuildRequires:  pkgconfig(glib-2.0) >= 2.68.0
 BuildRequires:  pkgconfig(gobject-introspection-1.0)
 BuildRequires:  pkgconfig(gtk+-3.0) >= 3.16.10
 BuildRequires:  pkgconfig(gudev-1.0)
 BuildRequires:  pkgconfig(gutenprint)
-BuildRequires:  pkgconfig(harfbuzz) >= 0.9.19
+BuildRequires:  pkgconfig(harfbuzz) >= 1.0.5
 BuildRequires:  pkgconfig(iso-codes)
 BuildRequires:  pkgconfig(json-glib-1.0) >= 1.2.6
 BuildRequires:  pkgconfig(lcms2) >= 2.8
@@ -83,7 +83,7 @@ BuildRequires:  pkgconfig(libheif) >= 1.6.0
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(liblzma) >= 5.0.0
 BuildRequires:  pkgconfig(libmng)
-BuildRequires:  pkgconfig(libmypaint) >= 1.3.0
+BuildRequires:  pkgconfig(libmypaint) >= 1.4.0
 BuildRequires:  pkgconfig(libopenjp2) >= 2.1.0
 BuildRequires:  pkgconfig(libpng) >= 1.6.25
 BuildRequires:  pkgconfig(librsvg-2.0) >= 2.40.6
@@ -92,9 +92,9 @@ BuildRequires:  pkgconfig(libunwind) >= 1.1.0
 BuildRequires:  pkgconfig(libwebp) >= 0.6.0
 BuildRequires:  pkgconfig(libwmf) >= 0.2.8
 BuildRequires:  pkgconfig(libxslt)
-BuildRequires:  pkgconfig(mypaint-brushes-1.0) >= 1.3.0
+BuildRequires:  pkgconfig(mypaint-brushes-1.0) >= 1.4.0
 BuildRequires:  pkgconfig(OpenEXR) >= 1.6.1
-BuildRequires:  pkgconfig(pangocairo) >= 1.42.0
+BuildRequires:  pkgconfig(pangocairo) >= 1.44.0
 BuildRequires:  pkgconfig(pangoft2) >= 1.29.4
 BuildRequires:  pkgconfig(poppler-data) >= 0.4.9
 BuildRequires:  pkgconfig(poppler-glib) >= 0.69.0
