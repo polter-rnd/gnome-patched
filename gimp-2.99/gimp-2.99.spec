@@ -30,10 +30,6 @@ Patch2:         gimp-2.99-default-font.patch
 # use external help browser directly if help browser plug-in is not built
 Patch3:         gimp-2.99-external-help-browser.patch
 
-# Update main window css classes on maximize/minimize/tile/etc.
-# Necessary for such gnome-shell extensions as pixel-saver
-Patch4:         gimp-2.99-window-state-event.patch
-
 BuildRequires:  aalib-devel
 BuildRequires:  curl
 BuildRequires:  dbus-daemon
