@@ -299,6 +299,8 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/*.xml
 %{_datadir}/icons/hicolor/*/apps/gimp.png
 %{_datadir}/icons/hicolor/*/apps/gimp-%{lib_api_version}.png
 
+%{_datadir}/icons/hicolor/scalable/apps/gimp.svg
+
 %files data
 %dir %{_datadir}/gimp
 %dir %{_datadir}/gimp/%{lib_api_version}
