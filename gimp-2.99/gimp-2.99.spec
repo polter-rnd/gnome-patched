@@ -360,7 +360,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/*.xml
 %{_libdir}/gimp/%{lib_api_version}/plug-ins/help-browser
 
 %changelog
-* Tue Oct 24 18:56:34 CET 2021 Pavel Artsishevsky <polter.rnd@gmail.com> - 2.99.8-1
+* Wed Oct 27 17:56:55 MSK 2021 Pavel Artsishevsky <polter.rnd@gmail.com> - 2.99.8-1
 - Update to 2.99.8
 
 * Mon May 17 17:15:34 CET 2021 Pavel Artsishevsky <polter.rnd@gmail.com> - 2.99.7-3
