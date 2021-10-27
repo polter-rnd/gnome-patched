@@ -85,6 +85,7 @@ BuildRequires:  pkgconfig(liblzma) >= 5.0.0
 BuildRequires:  pkgconfig(libmng)
 BuildRequires:  pkgconfig(libmypaint) >= 1.3.0
 BuildRequires:  pkgconfig(libopenjp2) >= 2.1.0
+BuildRequires:  pkgconfig(libjxl) >= 0.5.0
 BuildRequires:  pkgconfig(libpng) >= 1.6.25
 BuildRequires:  pkgconfig(librsvg-2.0) >= 2.40.6
 BuildRequires:  pkgconfig(libtiff-4)
