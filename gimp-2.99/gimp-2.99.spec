@@ -362,6 +362,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/*.xml
 %{_libdir}/gimp/%{lib_api_version}/plug-ins/help-browser
 
 %changelog
+* Tue Dec 7 11:36:41 MSK 2021 Pavel Artsishevsky <polter.rnd@gmail.com> - 2.99.8-2
+- Rebuild with libjxl-0.6
+
 * Wed Oct 27 17:56:55 MSK 2021 Pavel Artsishevsky <polter.rnd@gmail.com> - 2.99.8-1
 - Update to 2.99.8
 
