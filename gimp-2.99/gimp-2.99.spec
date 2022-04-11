@@ -3,18 +3,17 @@
 
 %global major 2
 %global minor 99
-%global micro 8
+%global micro 10
 %global binver %{major}.%{minor}
 %global lib_api_version %{major}.%{minor}
 %global gettext_version 30
 
-%global commit          71c2fd63b8748867c5c5c1de355f667a1dfe512a
-%global snapshotdate    20211019
+%global commit          618e11e602418e8c9639991b73a2a7f2b302ac38
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
 
-Name:       gimp-2.99
-Version:    2.99.8
-Release:    2%{?dist}
+Name:       gimp-%{binver}
+Version:    %{binver}.%{micro}
+Release:    1%{?dist}
 Summary:    GNU Image Manipulation Program
 
 License:    GPLv3+ and GPLv3
@@ -27,8 +26,7 @@ Source0:       https://gitlab.gnome.org/GNOME/gimp/-/archive/%{commit}/gimp-%{co
 Patch1:         gimp-2.99-cm-system-monitor-profile-by-default.patch
 # bz#1706653
 Patch2:         gimp-2.99-default-font.patch
-# use external help browser directly if help browser plug-in is not built
-Patch3:         gimp-2.99-external-help-browser.patch
+
 
 BuildRequires:  aalib-devel
 BuildRequires:  curl
@@ -61,7 +59,7 @@ BuildRequires:  pkgconfig(dbus-glib-1)
 BuildRequires:  pkgconfig(fontconfig) >= 2.12.4
 BuildRequires:  pkgconfig(freetype2) >= 2.1.7
 BuildRequires:  pkgconfig(gdk-pixbuf-2.0) >= 2.30.8
-BuildRequires:  pkgconfig(gegl-0.4) >= 0.4.32
+BuildRequires:  pkgconfig(gegl-0.4) >= 0.4.34
 BuildRequires:  pkgconfig(gexiv2) >= 0.10.6
 BuildRequires:  pkgconfig(gio-unix-2.0)
 BuildRequires:  pkgconfig(glib-2.0) >= 2.68.0
@@ -113,6 +111,7 @@ BuildRequires:  pkgconfig(zlib)
 BuildRequires:  vala
 BuildRequires:  xdg-utils
 BuildRequires:  xorg-x11-server-Xvfb
+BuildRequires:  gi-docgen
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       %{name}-data = %{version}-%{release}
 Requires:       hicolor-icon-theme
@@ -182,18 +181,11 @@ Requires:       %{name}-devel = %{version}-%{release}
 The %{name}-devel-tools package contains gimptool, a helper program to
 build GNU Image Manipulation Program (GIMP) plug-ins and extensions.
 
-%package help-browser
-Summary:        GIMP help browser plug-in
-License:        GPLv3+
-Requires:       %{name}%{?_isa} = %{version}-%{release}
 
-%description help-browser
-The %{name}-help-browser package contains a lightweight help browser plugin for
-viewing GIMP online help.
 
 %prep
 %autosetup -p1 -n gimp-%{commit}
-sed -i "s|0.4.27|0.4.26|" meson.build
+
 
 %build
 %meson %{!?with_heif:-Dheif=disabled}
@@ -287,7 +279,6 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/*.xml
 
 %dir %{_libdir}/gimp
 %dir %{_libdir}/gimp/%{lib_api_version}
-%exclude %{_libdir}/gimp/%{lib_api_version}/plug-ins/help-browser
 %dir %{_libdir}/girepository-1.0
 %{_libdir}/girepository-1.0/Gimp-3.0.typelib
 %{_libdir}/girepository-1.0/GimpUi-3.0.typelib
@@ -339,8 +330,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/*.xml
 %{_libdir}/libgimpwidgets-3.0.so.0*
 
 %files devel
-%doc HACKING README.i18n
-%doc %{_datadir}/gtk-doc
+%doc %{_datadir}/doc
 %{_libdir}/*.so
 %{_includedir}/gimp-3.0
 %{_libdir}/pkgconfig/*
@@ -352,16 +342,17 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/*.xml
 %{_datadir}/vala/vapi/gimp-ui-3.0.*
 
 %files devel-doc
-%doc %{_datadir}/gtk-doc
+%doc %{_datadir}/doc
 
 %files devel-tools
 %{_bindir}/gimptool-%{lib_api_version}
 %{_mandir}/man1/gimptool-%{lib_api_version}.1*
 
-%files help-browser
-%{_libdir}/gimp/%{lib_api_version}/plug-ins/help-browser
 
 %changelog
+* Tue Apr 12 10:35:24 MSK 2022 Pavel Artsishevsky <polter.rnd@gmail.com> - 2.99.10-1
+- Update to 2.99.10
+
 * Tue Dec 7 11:36:41 MSK 2021 Pavel Artsishevsky <polter.rnd@gmail.com> - 2.99.8-2
 - Rebuild with libjxl-0.6
 
