@@ -26,6 +26,8 @@ Source0:       https://gitlab.gnome.org/GNOME/gimp/-/archive/%{commit}/gimp-%{co
 Patch1:         gimp-2.99-cm-system-monitor-profile-by-default.patch
 # bz#1706653
 Patch2:         gimp-2.99-default-font.patch
+# downgrade GEGL to 0.4.34 for Fedora 34
+Patch3:         gimp-2.99-gegl-downgrade-fc34.diff
 
 
 BuildRequires:  aalib-devel
