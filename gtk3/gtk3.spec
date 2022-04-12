@@ -2,6 +2,7 @@
 %global with_broadway 1
 %endif
 
+%global meson_version 0.50.0
 %global glib2_version 2.57.2
 %global pango_version 1.41.0
 %global atk_version 2.35.1
@@ -18,16 +19,17 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 Name: gtk3
-Version: 3.24.30
-Release: 1.patched%{?dist}
+Version: 3.24.33
+Release: 1%{?dist}
 Summary: GTK+ graphical user interface library
 
 License: LGPLv2+
 URL: http://www.gtk.org
-Source0: https://download.gnome.org/sources/gtk+/3.24/gtk+-%{version}.tar.xz
+Source0: https://gitlab.gnome.org/GNOME/gtk/-/archive/%{version}/gtk-%{version}.tar.bz2
 
 Patch0: Fix-GtkEntryCompletion.patch
 
+BuildRequires: meson >= %{meson_version}
 BuildRequires: pkgconfig(atk) >= %{atk_version}
 BuildRequires: pkgconfig(atk-bridge-2.0)
 BuildRequires: pkgconfig(glib-2.0) >= %{glib2_version}
@@ -47,7 +49,7 @@ BuildRequires: pkgconfig(xinerama)
 BuildRequires: pkgconfig(xcomposite)
 BuildRequires: pkgconfig(xdamage)
 BuildRequires: pkgconfig(epoxy)
-BuildRequires: gettext
+BuildRequires: gettext-devel
 BuildRequires: gtk-doc
 BuildRequires: cups-devel
 BuildRequires: pkgconfig(rest-0.7)
@@ -150,36 +152,24 @@ The %{name}-tests package contains tests that can be used to verify
 the functionality of the installed %{name} package.
 
 %prep
-%autosetup -n gtk+-%{version} -p1
+%autosetup -n gtk-%{version} -p1
 
 %build
 export CFLAGS='-fno-strict-aliasing %optflags'
-(if ! test -x configure; then NOCONFIGURE=1 ./autogen.sh; CONFIGFLAGS=--enable-gtk-doc; fi;
- %configure $CONFIGFLAGS \
-        --enable-xkb \
-        --enable-xinerama \
-        --enable-xrandr \
-        --enable-xfixes \
-        --enable-xcomposite \
-        --enable-xdamage \
-        --enable-x11-backend \
-        --enable-wayland-backend \
-%if 0%{?with_broadway}
-        --enable-broadway-backend \
-%endif
-        --enable-cloudproviders \
-        --enable-colord \
-        --enable-installed-tests \
-        --with-included-immodules=wayland
-)
-
-# fight unused direct deps
-sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
-
-make %{?_smp_mflags}
+%meson \
+        %{?with_broadway:-Dbroadway_backend=true} \
+        -Dx11_backend=true \
+        -Dwayland_backend=true \
+        -Dbuiltin_immodules=wayland,waylandgtk \
+        -Dcloudproviders=true \
+        -Dcolord=yes \
+        -Dinstalled_tests=true \
+        -Dgtk_doc=true \
+        -Dman=true \
+%meson_build
 
 %install
-%make_install RUN_QUERY_IMMODULES_TEST=false
+%meson_install
 
 %find_lang gtk30
 %find_lang gtk30-properties
@@ -215,7 +205,7 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 %files -f gtk30.lang
 %license COPYING
-%doc AUTHORS NEWS README
+%doc AUTHORS NEWS
 %{_bindir}/gtk-query-immodules-3.0*
 %{_bindir}/gtk-launch
 %{_libdir}/libgtk-3.so.*
@@ -228,6 +218,7 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_libdir}/gtk-3.0/%{bin_version}/printbackends
 %{_libdir}/gtk-3.0/modules
 %{_libdir}/gtk-3.0/immodules
+%{_datadir}/gtk-3.0/emoji
 %{_datadir}/themes/Default
 %{_datadir}/themes/Emacs
 %{_libdir}/girepository-1.0
@@ -309,6 +300,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests/
 
 %changelog
+* Tue Apr 12 2022 Pavel Artsishevsky <polter.rnd@gmail.com> - 3.24.33-1
+- Update to 3.24.33
+
 * Mon Jul 12 2021 David King <amigadave@amigadave.com> - 3.24.30-1
 - Update to 3.24.30
 
