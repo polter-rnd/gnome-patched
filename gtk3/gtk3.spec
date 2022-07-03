@@ -2,7 +2,6 @@
 %global with_broadway 1
 %endif
 
-%global meson_version 0.50.0
 %global glib2_version 2.57.2
 %global pango_version 1.41.0
 %global atk_version 2.35.1
@@ -18,27 +17,35 @@
 # Filter provides for private modules
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
-Name: gtk3
-Version: 3.24.33
-Release: 1%{?dist}
+Name:    gtk3
+Version: 3.24.34
+Release: 1.patched%{?dist}
 Summary: GTK+ graphical user interface library
 
 License: LGPLv2+
-URL: http://www.gtk.org
-Source0: https://gitlab.gnome.org/GNOME/gtk/-/archive/%{version}/gtk-%{version}.tar.bz2
+URL:     https://gtk.org
+Source0: https://download.gnome.org/sources/gtk+/3.24/gtk+-%{version}.tar.xz
 
 Patch0: Fix-GtkEntryCompletion.patch
 
-BuildRequires: meson >= %{meson_version}
 BuildRequires: pkgconfig(atk) >= %{atk_version}
 BuildRequires: pkgconfig(atk-bridge-2.0)
-BuildRequires: pkgconfig(glib-2.0) >= %{glib2_version}
-BuildRequires: pkgconfig(gobject-introspection-1.0)
+BuildRequires: pkgconfig(avahi-gobject)
 BuildRequires: pkgconfig(cairo) >= %{cairo_version}
 BuildRequires: pkgconfig(cairo-gobject) >= %{cairo_version}
-BuildRequires: pkgconfig(pango) >= %{pango_version}
-BuildRequires: pkgconfig(gdk-pixbuf-2.0) >= %{gdk_pixbuf_version}
 BuildRequires: pkgconfig(cloudproviders)
+BuildRequires: pkgconfig(colord)
+BuildRequires: pkgconfig(egl)
+BuildRequires: pkgconfig(epoxy)
+BuildRequires: pkgconfig(gdk-pixbuf-2.0) >= %{gdk_pixbuf_version}
+BuildRequires: pkgconfig(glib-2.0) >= %{glib2_version}
+BuildRequires: pkgconfig(gobject-introspection-1.0)
+BuildRequires: pkgconfig(pango) >= %{pango_version}
+BuildRequires: pkgconfig(tracker-sparql-3.0)
+BuildRequires: pkgconfig(wayland-client) >= %{wayland_version}
+BuildRequires: pkgconfig(wayland-cursor) >= %{wayland_version}
+BuildRequires: pkgconfig(wayland-egl) >= %{wayland_version}
+BuildRequires: pkgconfig(wayland-protocols) >= %{wayland_protocols_version}
 BuildRequires: pkgconfig(xi)
 BuildRequires: pkgconfig(xrandr) >= %{xrandr_version}
 BuildRequires: pkgconfig(xrender)
@@ -48,22 +55,12 @@ BuildRequires: pkgconfig(xfixes)
 BuildRequires: pkgconfig(xinerama)
 BuildRequires: pkgconfig(xcomposite)
 BuildRequires: pkgconfig(xdamage)
-BuildRequires: pkgconfig(epoxy)
-BuildRequires: gettext-devel
-BuildRequires: gtk-doc
-BuildRequires: cups-devel
-BuildRequires: pkgconfig(rest-0.7)
-BuildRequires: pkgconfig(json-glib-1.0)
-BuildRequires: pkgconfig(colord)
-BuildRequires: pkgconfig(avahi-gobject)
-BuildRequires: desktop-file-utils
-BuildRequires: pkgconfig(egl)
-BuildRequires: pkgconfig(wayland-client) >= %{wayland_version}
-BuildRequires: pkgconfig(wayland-cursor) >= %{wayland_version}
-BuildRequires: pkgconfig(wayland-egl) >= %{wayland_version}
-BuildRequires: pkgconfig(wayland-protocols) >= %{wayland_protocols_version}
 BuildRequires: pkgconfig(xkbcommon)
-BuildRequires: make
+BuildRequires: cups-devel
+BuildRequires: desktop-file-utils
+BuildRequires: gettext
+BuildRequires: gtk-doc
+BuildRequires: meson
 
 # standard icons
 Requires: adwaita-icon-theme
@@ -77,10 +74,10 @@ Requires: cairo%{?_isa} >= %{cairo_version}
 Requires: cairo-gobject%{?_isa} >= %{cairo_version}
 Requires: glib2%{?_isa} >= %{glib2_version}
 Requires: libepoxy%{?_isa} >= %{epoxy_version}
-Requires: libXrandr%{?_isa} >= %{xrandr_version}
-Requires: pango%{?_isa} >= %{pango_version}
 Requires: libwayland-client%{?_isa} >= %{wayland_version}
 Requires: libwayland-cursor%{?_isa} >= %{wayland_version}
+Requires: libXrandr%{?_isa} >= %{xrandr_version}
+Requires: pango%{?_isa} >= %{pango_version}
 
 # required to support all the different image formats
 Requires: gdk-pixbuf2-modules%{?_isa}
@@ -90,6 +87,9 @@ Recommends: dconf%{?_isa}
 
 # For sound theme events in gtk3 apps
 Recommends: libcanberra-gtk3%{?_isa}
+
+# For Tracker search in the file chooser.
+Recommends: tracker-miners
 
 %description
 GTK+ is a multi-platform toolkit for creating graphical user
@@ -152,20 +152,22 @@ The %{name}-tests package contains tests that can be used to verify
 the functionality of the installed %{name} package.
 
 %prep
-%autosetup -n gtk-%{version} -p1
+%autosetup -n gtk+-%{version} -p1
 
 %build
 export CFLAGS='-fno-strict-aliasing %optflags'
 %meson \
-        %{?with_broadway:-Dbroadway_backend=true} \
-        -Dx11_backend=true \
-        -Dwayland_backend=true \
+%if 0%{?with_broadway}
+        -Dbroadway_backend=true \
+%endif
         -Dbuiltin_immodules=wayland,waylandgtk \
-        -Dcloudproviders=true \
         -Dcolord=yes \
-        -Dinstalled_tests=true \
+        -Dcloudproviders=true \
         -Dgtk_doc=true \
+        -Dinstalled_tests=true \
         -Dman=true \
+        -Dtracker3=true \
+        -Dxinerama=yes \
 %meson_build
 
 %install
@@ -180,19 +182,11 @@ export CFLAGS='-fno-strict-aliasing %optflags'
 
 echo ".so man1/gtk-query-immodules-3.0.1" > $RPM_BUILD_ROOT%{_mandir}/man1/gtk-query-immodules-3.0-%{__isa_bits}.1
 
-# Remove unpackaged files
-find $RPM_BUILD_ROOT -name '*.la' -delete
-
-%if !0%{?with_broadway}
-rm $RPM_BUILD_ROOT%{_mandir}/man1/broadwayd.1*
-%endif
-
 touch $RPM_BUILD_ROOT%{_libdir}/gtk-3.0/%{bin_version}/immodules.cache
 
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/gtk-3.0
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/gtk-3.0/modules
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/gtk-3.0/immodules
-mkdir -p $RPM_BUILD_ROOT%{_libdir}/gtk-3.0/%{bin_version}/theming-engines
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
@@ -205,7 +199,7 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 %files -f gtk30.lang
 %license COPYING
-%doc AUTHORS NEWS
+%doc AUTHORS NEWS README
 %{_bindir}/gtk-query-immodules-3.0*
 %{_bindir}/gtk-launch
 %{_libdir}/libgtk-3.so.*
@@ -213,12 +207,10 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_libdir}/libgailutil-3.so.*
 %dir %{_libdir}/gtk-3.0
 %dir %{_libdir}/gtk-3.0/%{bin_version}
-%{_libdir}/gtk-3.0/%{bin_version}/theming-engines
 %dir %{_libdir}/gtk-3.0/%{bin_version}/immodules
 %{_libdir}/gtk-3.0/%{bin_version}/printbackends
 %{_libdir}/gtk-3.0/modules
 %{_libdir}/gtk-3.0/immodules
-%{_datadir}/gtk-3.0/emoji
 %{_datadir}/themes/Default
 %{_datadir}/themes/Emacs
 %{_libdir}/girepository-1.0
@@ -230,6 +222,8 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/glib-2.0/schemas/org.gtk.Settings.EmojiChooser.gschema.xml
 %{_datadir}/glib-2.0/schemas/org.gtk.Settings.FileChooser.gschema.xml
 %{_datadir}/glib-2.0/schemas/org.gtk.exampleapp.gschema.xml
+%dir %{_datadir}/gtk-3.0
+%{_datadir}/gtk-3.0/emoji/
 %if 0%{?with_broadway}
 %{_bindir}/broadwayd
 %{_mandir}/man1/broadwayd.1*
@@ -281,7 +275,6 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/gettext/
 %{_datadir}/gir-1.0
 %{_datadir}/glib-2.0/schemas/org.gtk.Demo.gschema.xml
-%dir %{_datadir}/gtk-3.0
 %{_datadir}/gtk-3.0/gtkbuilder.rng
 %{_datadir}/gtk-3.0/valgrind/
 %{_mandir}/man1/gtk3-demo.1*
@@ -300,8 +293,31 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/installed-tests/
 
 %changelog
-* Tue Apr 12 2022 Pavel Artsishevsky <polter.rnd@gmail.com> - 3.24.33-1
+* Thu May 19 2022 David King <amigadave@amigadave.com> - 3.24.34-1
+- Update to 3.24.34
+
+* Thu May 12 2022 David King <amigadave@amigadave.com> - 3.24.33-1
 - Update to 3.24.33
+
+* Thu Jan 20 2022 Fedora Release Engineering <releng@fedoraproject.org> - 3.24.31-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
+* Thu Dec 23 2021 David King <amigadave@amigadave.com> - 3.24.31-2
+- Do not install reftests
+
+* Tue Dec 21 2021 David King <amigadave@amigadave.com> - 3.24.31-1
+- Update to 3.24.31
+- Switch to meson
+- Recommend tracker-miners (#2009887)
+
+* Mon Sep 27 2021 Kalev Lember <klember@redhat.com> - 3.24.30-4
+- Build with tracker support enabled (#1908874)
+
+* Mon Sep 20 2021 Kalev Lember <klember@redhat.com> - 3.24.30-3
+- Stop creating empty theming-engines directory as it's no longer used
+
+* Thu Jul 22 2021 Fedora Release Engineering <releng@fedoraproject.org> - 3.24.30-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
 
 * Mon Jul 12 2021 David King <amigadave@amigadave.com> - 3.24.30-1
 - Update to 3.24.30
