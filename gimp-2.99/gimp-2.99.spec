@@ -13,7 +13,7 @@
 
 Name:       gimp-%{binver}
 Version:    %{binver}.%{micro}
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    GNU Image Manipulation Program
 
 License:    GPLv3+ and GPLv3
@@ -59,8 +59,8 @@ BuildRequires:  pkgconfig(dbus-glib-1)
 BuildRequires:  pkgconfig(fontconfig) >= 2.12.4
 BuildRequires:  pkgconfig(freetype2) >= 2.1.7
 BuildRequires:  pkgconfig(gdk-pixbuf-2.0) >= 2.30.8
-BuildRequires:  pkgconfig(gegl-0.4) >= 0.4.34
-BuildRequires:  pkgconfig(gexiv2) >= 0.10.6
+BuildRequires:  pkgconfig(gegl-0.4) >= 0.4.36
+BuildRequires:  pkgconfig(gexiv2) >= 0.14.0
 BuildRequires:  pkgconfig(gio-unix-2.0)
 BuildRequires:  pkgconfig(glib-2.0) >= 2.68.0
 BuildRequires:  pkgconfig(gobject-introspection-1.0)
@@ -81,9 +81,9 @@ BuildRequires:  pkgconfig(libheif) >= 1.6.0
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(liblzma) >= 5.0.0
 BuildRequires:  pkgconfig(libmng)
-BuildRequires:  pkgconfig(libmypaint) >= 1.3.0
+BuildRequires:  pkgconfig(libmypaint) >= 1.4.0
 BuildRequires:  pkgconfig(libopenjp2) >= 2.1.0
-BuildRequires:  pkgconfig(libjxl) >= 0.5.0
+BuildRequires:  pkgconfig(libjxl) >= 0.6.1
 BuildRequires:  pkgconfig(libpng) >= 1.6.25
 BuildRequires:  pkgconfig(librsvg-2.0) >= 2.40.6
 BuildRequires:  pkgconfig(libtiff-4)
@@ -350,6 +350,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/*.xml
 
 
 %changelog
+* Sun Jul 3 21:25:11 MSK 2022 Pavel Artsishevsky <polter.rnd@gmail.com> - 2.99.10-2
+- Update to 2.99.10
+
 * Tue Apr 12 10:35:24 MSK 2022 Pavel Artsishevsky <polter.rnd@gmail.com> - 2.99.10-1
 - Update to 2.99.10
 
