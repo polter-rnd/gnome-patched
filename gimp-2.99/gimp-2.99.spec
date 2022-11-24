@@ -1,15 +1,15 @@
 # build with HEIF support (needs RPMFusion free)
 %bcond_with heif
 
+# disable LTO (breaks gimp-2.99.15 build on F37)
+%global _lto_cflags %nil
+
 %global major 2
 %global minor 99
-%global micro 10
+%global micro 14
 %global binver %{major}.%{minor}
 %global lib_api_version %{major}.%{minor}
 %global gettext_version 30
-
-%global commit          618e11e602418e8c9639991b73a2a7f2b302ac38
-%global shortcommit     %(c=%{commit}; echo ${c:0:7})
 
 Name:       gimp-%{binver}
 Version:    %{binver}.%{micro}
@@ -19,7 +19,7 @@ Summary:    GNU Image Manipulation Program
 License:    GPLv3+ and GPLv3
 URL:        https://www.gimp.org/
 	
-Source0:       https://gitlab.gnome.org/GNOME/gimp/-/archive/%{commit}/gimp-%{commit}.tar.bz2
+Source0:    https://download.gimp.org/gimp/v%{binver}/gimp-%{binver}.%{micro}.tar.xz
 
 # Try using the system monitor profile for color management by default.
 # Fedora specific.
@@ -42,16 +42,18 @@ BuildRequires:  gtk-doc >= 1.0
 BuildRequires:  icu
 BuildRequires:  ImageMagick
 BuildRequires:  intltool >= 0.40.1
+BuildRequires:  appstream >= 0.15.3
 BuildRequires:  libappstream-glib >= 0.7.7
 BuildRequires:  libgs-devel
 BuildRequires:  luajit
-BuildRequires:  meson >= 0.50.0
+BuildRequires:  meson >= 0.56.0
 BuildRequires:  perl-generators
 BuildRequires:  perl-interpreter
+BuildRequires:  perl-lib
 BuildRequires:  pkgconfig(alsa) >= 1.0.0
 BuildRequires:  pkgconfig(appstream-glib) >= 0.7.7
 BuildRequires:  pkgconfig(atk) >= 2.4.0
-BuildRequires:  pkgconfig(babl) >= 0.1.78
+BuildRequires:  pkgconfig(babl) >= 0.1.98
 BuildRequires:  pkgconfig(bzip2)
 BuildRequires:  pkgconfig(cairo) >= 1.12.2
 BuildRequires:  pkgconfig(cairo-pdf) >= 1.12.2
@@ -59,7 +61,7 @@ BuildRequires:  pkgconfig(dbus-glib-1)
 BuildRequires:  pkgconfig(fontconfig) >= 2.12.4
 BuildRequires:  pkgconfig(freetype2) >= 2.1.7
 BuildRequires:  pkgconfig(gdk-pixbuf-2.0) >= 2.30.8
-BuildRequires:  pkgconfig(gegl-0.4) >= 0.4.36
+BuildRequires:  pkgconfig(gegl-0.4) >= 0.4.40
 BuildRequires:  pkgconfig(gexiv2) >= 0.14.0
 BuildRequires:  pkgconfig(gio-unix-2.0)
 BuildRequires:  pkgconfig(glib-2.0) >= 2.68.0
@@ -76,17 +78,17 @@ BuildRequires:  pkgconfig(libart-2.0) >= 2.3.19
 BuildRequires:  pkgconfig(libexif) >= 0.6.15
 # RPMFusion free
 %if %{with heif}
-BuildRequires:  pkgconfig(libheif) >= 1.6.0
+BuildRequires:  pkgconfig(libheif) >= 1.3.2
 %endif
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(liblzma) >= 5.0.0
 BuildRequires:  pkgconfig(libmng)
-BuildRequires:  pkgconfig(libmypaint) >= 1.4.0
+BuildRequires:  pkgconfig(libmypaint) >= 1.3.0
 BuildRequires:  pkgconfig(libopenjp2) >= 2.1.0
 BuildRequires:  pkgconfig(libjxl) >= 0.6.1
 BuildRequires:  pkgconfig(libpng) >= 1.6.25
 BuildRequires:  pkgconfig(librsvg-2.0) >= 2.40.6
-BuildRequires:  pkgconfig(libtiff-4)
+BuildRequires:  pkgconfig(libtiff-4) >= 4.0.0
 BuildRequires:  pkgconfig(libunwind) >= 1.1.0
 BuildRequires:  pkgconfig(libwebp) >= 0.6.0
 BuildRequires:  pkgconfig(libwmf) >= 0.2.8
@@ -184,7 +186,7 @@ build GNU Image Manipulation Program (GIMP) plug-ins and extensions.
 
 
 %prep
-%autosetup -p1 -n gimp-%{commit}
+%autosetup -p1 -n gimp-%{binver}.%{micro}
 
 
 %build
@@ -217,11 +219,14 @@ rm -f %{buildroot}%{_mandir}/man5/gimprc.5*
 rm -f %{buildroot}%{_mandir}/man1/gimptool.1*
 
 # Remove unversioned metainfo (conflict with GIMP)
-rm  -f %{buildroot}%{_datadir}/metainfo/*.appdata.xml
+rm -f %{buildroot}%{_datadir}/metainfo/*.appdata.xml
 
-# Remove window-close icon (fix issue #5875)
-# https://gitlab.gnome.org/GNOME/gimp/-/issues/5875
-rm -f %{buildroot}%{_datadir}/gimp/%{binver}/icons/Symbolic/scalable/apps/window-close-symbolic.svg
+# Remove unversioned symlinks
+rm -f %{buildroot}%{_bindir}/gimp
+rm -f %{buildroot}%{_bindir}/gimp-console
+rm -f %{buildroot}%{_bindir}/gimp-test-clipboard
+rm -f %{buildroot}%{_bindir}/gimptool
+rm -f %{buildroot}%{_libexecdir}/gimp-debug-tool
 
 # desktop file -- mention version/unstable, use custom icon
 desktop-file-install --dir=%{buildroot}%{_datadir}/applications \
@@ -252,7 +257,7 @@ popd
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/*.xml
+#appstreamcli validate %{buildroot}%{_datadir}/metainfo/*.appdata.xml
 
 %files -f gimp.files
 %license COPYING
@@ -260,6 +265,8 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/*.xml
 %{_bindir}/gimp-%{binver}
 %{_bindir}/gimp-console-%{binver}
 %{_bindir}/gimp-test-clipboard-%{lib_api_version}
+%{_bindir}/gimptool-%{lib_api_version}
+%{_bindir}/gimp-script-fu-interpreter-3.0
 %{_libexecdir}/gimp-debug-tool-%{lib_api_version}
 
 %{_mandir}/man1/gimp-%{binver}.1*
@@ -285,7 +292,6 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/*.xml
 
 %{_datadir}/applications/*.desktop
 # %%{_datadir}/metainfo/*.appdata.xml
-%{_datadir}/appdata/*.metainfo.xml
 
 %{_datadir}/icons/hicolor/*/apps/gimp.png
 %{_datadir}/icons/hicolor/*/apps/gimp-%{lib_api_version}.png
@@ -328,6 +334,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/*.xml
 %{_libdir}/libgimpthumb-3.0.so.0*
 %{_libdir}/libgimpui-3.0.so.0*
 %{_libdir}/libgimpwidgets-3.0.so.0*
+%{_libdir}/libgimp-scriptfu-3.0.so.0*
 
 %files devel
 %doc %{_datadir}/doc
@@ -350,6 +357,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/*.xml
 
 
 %changelog
+* Thu Nov 24 22:01:32 MSK 2022 Pavel Artsishevsky <polter.rnd@gmail.com> - 2.99.14-1
+- Update to 2.99.14
+
 * Sun Jul 3 21:25:11 MSK 2022 Pavel Artsishevsky <polter.rnd@gmail.com> - 2.99.10-2
 - Update to 2.99.10
 
